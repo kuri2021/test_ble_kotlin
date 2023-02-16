@@ -55,6 +55,8 @@ class MainActivity : AppCompatActivity() {
     private var mContext:Context? = null
 
     lateinit var text:TextView
+    var checkstr:String=""
+    var check:Int=0
 
     @SuppressWarnings("MissingPermission")
     private val mLeScanCallback = object : ScanCallback() {
@@ -90,6 +92,7 @@ class MainActivity : AppCompatActivity() {
                 if(result.device.name=="PLEASY BEACON") {
 //                    result.sc
                     Log.d("resulttest", result.scanRecord.toString())
+
                     var test1 = result.scanRecord.toString().substring(result.scanRecord.toString().indexOf("mManufacturerSpecificData")+1)
                     test1=test1.substring(0,test1.indexOf("]},"))
                     test1=test1.replace("mManufacturerSpecificData={","")
@@ -112,8 +115,10 @@ class MainActivity : AppCompatActivity() {
                         Log.d("intes",int.toString())
                     }
 
+
                     for (i in 0..int.size-1){
-                        var test42=Integer.toHexString(int[i])
+//                        var test42=Integer.toHexString(int[i])
+                        var test42=intToUInt8(int[i])
                         Log.d("int2es",test42.toString())
                     }
                 }
@@ -122,10 +127,30 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    fun toHexString(byteArray: ByteArray): String {
+        val sbx = StringBuilder()
+        for (i in byteArray.indices) {
+            sbx.append(String.format("%02X", byteArray[i]))
+        }
+
+        if(check>1&&check<18){
+            if(check==5||check==7||check==9||check==11){
+                checkstr=checkstr+sbx+"-"
+            }else{
+                checkstr=checkstr+sbx
+            }
+        }
+        check=check+1
+        Log.d("resulttest23",checkstr)
+        Log.d("resulttest23",sbx.toString())
+        return sbx.toString()
+    }
+
     fun intToUInt8(value: Int): ByteArray {
         val bytes = ByteArray(4)
         ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).putInt(value and 0xff)
         var array = Arrays.copyOfRange(bytes, 0, 1)
+        toHexString(array)
         return array
     }
 
@@ -165,27 +190,6 @@ class MainActivity : AppCompatActivity() {
         devicesArr.clear()
         bluetoothAdapter?.bluetoothLeScanner?.startScan(mLeScanCallback)
         bluetoothAdapter?.bluetoothLeScanner?.startScan(buildScanFilters(), buildScanSettings(),mLeScanCallback)
-
-//        try {
-//            val getUuidsMethod: Method = BluetoothAdapter::class.java.getDeclaredMethod("getUuids", null)
-//            val uuids = getUuidsMethod.invoke(bluetoothAdapter, null) as Array<ParcelUuid>
-//            if (uuids != null) {
-//                for (uuid in uuids) {
-//                    Log.d(TAG, "UUID: ${uuid}" + uuid.uuid.toString())
-//                }
-//            } else {
-//                Log.d(TAG, "Uuids not found, be sure to enable Bluetooth!")
-//            }
-//        } catch (e: NoSuchMethodException) {
-//            e.printStackTrace()
-//            Log.d(TAG, "UUIDF:" + e.toString())
-//        } catch (e: IllegalAccessException) {
-//            e.printStackTrace()
-//            Log.d(TAG, "UUIDF:" + e.toString())
-//        } catch (e: InvocationTargetException) {
-//            e.printStackTrace()
-//            Log.d(TAG, "UUIDF:" + e.toString())
-//        }
     }else{
         scanning = false
         bluetoothAdapter?.bluetoothLeScanner?.stopScan(mLeScanCallback)

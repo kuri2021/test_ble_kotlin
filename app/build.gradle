@@ -33,9 +33,15 @@ android {
     buildFeatures {
         dataBinding = true
     }
+
+
 }
 
 dependencies {
+
+    implementation 'no.nordicsemi.android:ble-ktx:2.6.0'
+    implementation 'no.nordicsemi.android.support.v18:scanner:1.6.0'
+
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.6.0'
